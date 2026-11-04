@@ -1,0 +1,8 @@
+{
+  "name": "packpilot-costing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-worker.mjs"
+  }
+}

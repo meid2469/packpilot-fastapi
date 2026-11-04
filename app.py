@@ -1,8 +1,28 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from pydantic import BaseModel, Field
 
+from costing import CostCalculationRequest, CostCalculationResponse, calculate_cost
 
-app = FastAPI(title="PackPilot Weight Calculator")
+
+app = FastAPI(title="PackPilot Costing & Weight Calculator", version="1.0.0")
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return FileResponse(STATIC_DIR / "index.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "service": "packpilot", "version": "1.0.0"}
+
+
+app.post("/calculate-cost", response_model=CostCalculationResponse)(calculate_cost)
 
 
 class WeightCalculationRequest(BaseModel):

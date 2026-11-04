@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183d35">
+  <meta name="description" content="正浩包装 PE 背心袋成本核算器。按工厂核价规则，计算投料、边料回收、制袋与包装费用。">
+  <title>PackPilot Costing · 正浩包装核价器</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="PackPilot Costing 首页">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m16 4 11 6v12l-11 6L5 22V10L16 4Z" stroke="currentColor" stroke-width="1.8"/><path d="m5 10 11 6 11-6M16 16v12M10.5 7l11 6" stroke="currentColor" stroke-width="1.8"/></svg></span>
+      <span>PackPilot <span class="brand-divider">/</span> <span class="brand-product">Costing</span></span>
+    </a>
+    <div class="header-context"><span class="status-dot" aria-hidden="true"></span>正浩包装<span class="header-separator">·</span>工厂核价工作台</div>
+  </header>
+
+  <main class="workspace">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div><p class="eyebrow">PE BAG COST CALCULATOR</p><h1 id="page-title">让每一只袋子的成本，有据可查。</h1><p class="page-description">输入订单与生产参数，自动核算 PE 背心袋的工厂成本。</p></div>
+      <span class="version-tag">正浩核价规则 <b>V1.0</b></span>
+    </section>
+
+    <div class="calculator-layout">
+      <div class="input-column">
+        <form id="cost-form" novalidate>
+          <section class="panel" aria-labelledby="order-heading">
+            <div class="section-heading"><div class="section-title"><span class="step-number">01</span><h2 id="order-heading">订单与生产</h2></div><span class="section-caption">PE 背心袋</span></div>
+            <div class="field-grid">
+              <div class="field"><label for="order_quantity">客户订货数量</label><div class="input-unit"><input id="order_quantity" name="order_quantity" type="number" inputmode="numeric" min="1" max="1000000000" step="1" value="30000" required><span>个</span></div></div>
+              <div class="field"><label for="production_quantity">预计合格生产数量</label><div class="input-unit"><input id="production_quantity" name="production_quantity" type="number" inputmode="numeric" min="1" max="1000000000" step="1" value="32000" required><span>个</span></div></div>
+            </div>
+            <p class="field-note"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor"/><path d="M10 9v5m0-8v.5" stroke="currentColor" stroke-linecap="round"/></svg>超产袋子无法销售，全部生产成本由客户订货数量承担。</p>
+          </section>
+
+          <section class="panel" aria-labelledby="material-heading">
+            <div class="section-heading"><div class="section-title"><span class="step-number">02</span><h2 id="material-heading">克重与原料</h2></div><span class="section-caption">以冲切前克重核算</span></div>
+            <div class="field-grid">
+              <div class="field"><label for="material_type">PE 种类 <span class="optional-label">备注</span></label><select id="material_type" name="material_type"><option value="高压 PE">高压 PE</option><option value="低压 PE">低压 PE</option><option value="混合 PE">混合 PE</option></select></div>
+              <div class="field"><label for="material_price_per_ton">原料价格</label><div class="input-unit"><input id="material_price_per_ton" name="material_price_per_ton" type="number" inputmode="decimal" min="0.000001" max="100000000" step="any" value="11250" required><span>元 / 吨</span></div></div>
+              <div class="field full-width"><label for="weight_per_piece_g">冲切前单袋克重 <span class="required-tag">核价依据</span></label><div class="input-unit"><input id="weight_per_piece_g" name="weight_per_piece_g" type="number" inputmode="decimal" min="0.000001" max="100000" step="any" value="2.1" required><span>g / 个</span></div><p class="field-help">使用工厂实测或确认的克重，已包含袋子的完整膜料口径。</p></div>
+            </div>
+            <details class="weight-check" id="weight-details">
+              <summary><span>尺寸与理论克重校验</span><span class="optional-label">选填</span><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m6 8 4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg></summary>
+              <div class="check-content">
+                <p class="field-help check-intro">仅作平展双面膜理论参考，不扣手提冲孔、不另加折边；不会覆盖上方核价克重。</p>
+                <div class="field-grid">
+                  <div class="field"><label for="width_mm">平展宽度</label><div class="input-unit"><input id="width_mm" type="number" inputmode="decimal" min="0.000001" step="any" value="140"><span>mm</span></div></div>
+                  <div class="field"><label for="height_mm">长度</label><div class="input-unit"><input id="height_mm" type="number" inputmode="decimal" min="0.000001" step="any" value="200"><span>mm</span></div></div>
+                  <div class="field"><label for="thickness_mm">单层厚度</label><div class="input-unit"><input id="thickness_mm" type="number" inputmode="decimal" min="0.000001" step="any" value="0.04"><span>mm</span></div><p class="field-help">1 丝 = 0.01 mm</p></div>
+                  <div class="field"><label for="density">密度 <span class="optional-label">自行确认</span></label><div class="input-unit"><input id="density" type="number" inputmode="decimal" min="0.000001" step="any" value="0.93"><span>g / cm³</span></div></div>
+                </div>
+                <button class="button button-outline check-button" type="button" id="check-weight">校验理论克重 <span aria-hidden="true">↗</span></button>
+                <p id="weight-result" class="weight-result" role="status"></p>
+              </div>
+            </details>
+          </section>
+
+          <section class="panel packaging-panel" aria-labelledby="packaging-heading">
+            <div class="section-heading"><div class="section-title"><span class="step-number">03</span><h2 id="packaging-heading">交付包装</h2></div><span class="section-caption">按客户订货数量</span></div>
+            <fieldset class="packaging-options"><legend class="sr-only">选择包装方式</legend>
+              <label class="package-option"><input type="radio" name="packaging_type" value="carton" checked><span class="package-card"><span class="package-icon" aria-hidden="true">▣</span><span><strong>纸箱</strong><small>¥4.50 / 箱</small></span><span class="radio-mark" aria-hidden="true"></span></span></label>
+              <label class="package-option"><input type="radio" name="packaging_type" value="sack"><span class="package-card"><span class="package-icon" aria-hidden="true">▤</span><span><strong>包装口袋</strong><small>¥1.56 / 包</small></span><span class="radio-mark" aria-hidden="true"></span></span></label>
+              <label class="package-option"><input type="radio" name="packaging_type" value="none"><span class="package-card"><span><strong>不计包装</strong><small>¥0.00</small></span><span class="radio-mark" aria-hidden="true"></span></span></label>
+            </fieldset>
+            <div class="field"><label for="pieces_per_package" id="package-capacity-label">每箱装袋数量</label><div class="input-unit"><input id="pieces_per_package" name="pieces_per_package" type="number" inputmode="numeric" min="1" max="1000000000" step="1" value="10000" required><span>个</span></div><p class="field-help" id="packaging-note">纸箱 4.10 + 套箱袋 0.30 + 合格证 0.10 = 4.50 元 / 箱；不足一箱按整箱计。</p></div>
+          </section>
+
+          <div class="form-actions"><button type="button" class="text-button" id="reset-example"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 7A6 6 0 1 1 4 12M4 3v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>重置示例</button><button class="button button-primary" type="submit">重新核算 <span aria-hidden="true">→</span></button></div>
+        </form>
+        <section class="rules-note" aria-labelledby="rules-heading"><h3 id="rules-heading">已应用的工厂规则</h3><p><span>吹膜投料 <b>× 1.10</b></span><span>边料率 <b>17%</b></span><span>回收 <b>¥3.4 / 斤</b></span><span>制袋 <b>¥0.006 / 个</b></span></p><div>17% 以吹膜投料重量计，回收价折合 6.8 元 / kg。边料不再额外计作一次损耗。</div></section>
+      </div>
+
+      <aside class="results-column" aria-label="核价结果">
+        <section class="result-panel" aria-labelledby="result-heading" id="result-panel">
+          <div class="result-heading"><h2 id="result-heading">本单核价结果</h2><span class="calculation-status" id="calculation-status" role="status">准备核算</span></div>
+          <p class="unit-cost-label">单袋工厂成本</p><div class="unit-cost"><span class="currency">¥</span><strong id="unit-cost">—</strong><span class="per-unit">/ 个</span></div>
+          <p class="calculation-basis" id="calculation-basis">全部成本 ÷ 客户订货数量</p>
+          <div class="result-summary"><div><span>本单总成本</span><strong id="total-cost">—</strong></div><div><span>超产数量</span><strong id="overproduction-quantity">—</strong></div></div>
+          <div class="result-error" id="result-error" role="alert" hidden></div>
+          <div class="result-warnings" id="result-warnings" hidden></div>
+          <div class="breakdown">
+            <div class="breakdown-title"><h3>成本明细</h3><span>人民币 · 元</span></div>
+            <div class="cost-bar" aria-hidden="true"><span id="film-bar"></span><span id="making-bar"></span><span id="packaging-bar"></span></div>
+            <div class="breakdown-line"><span><i class="legend-dot film-dot"></i>净膜成本</span><strong id="net-film-cost">—</strong></div>
+            <div class="sub-line"><span>全部投料原料成本</span><span id="material-cost">—</span></div>
+            <div class="sub-line"><span>减：边料回收抵扣</span><span id="scrap-credit">—</span></div>
+            <div class="breakdown-line separated"><span><i class="legend-dot making-dot"></i>制袋费</span><strong id="making-cost">—</strong></div>
+            <p class="line-formula" id="making-formula">预计合格生产数量 × 0.006 元</p>
+            <div class="breakdown-line separated"><span><i class="legend-dot packaging-dot"></i>包装费</span><strong id="packaging-cost">—</strong></div>
+            <p class="line-formula" id="packaging-formula">按交付数量向上取整</p>
+            <div class="breakdown-total"><span>本单总成本</span><strong id="breakdown-total">—</strong></div>
+          </div>
+          <div class="result-actions"><button class="button button-outline" id="copy-result" type="button" disabled><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M13 6V3H4v11h3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>复制结果</button><button class="button button-outline" id="export-result" type="button" disabled><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v9m-3-3 3 3 3-3M4 13v4h12v-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>导出 CSV</button></div>
+          <p class="action-feedback" id="action-feedback" role="status"></p>
+          <p class="cost-scope">此结果为上述项目的成本试算。销售利润、税费、运费及其他未录入费用需另计。</p>
+        </section>
+
+        <section class="panel material-flow" aria-labelledby="flow-heading"><div class="flow-heading"><h2 id="flow-heading">物料核算</h2><span>kg</span></div><dl><div><dt>冲切前膜料重量</dt><dd id="film-weight">—</dd></div><div><dt>吹膜投料重量 <small>× 1.10</small></dt><dd id="input-weight">—</dd></div><div><dt>可回收边料重量 <small>投料 × 17%</small></dt><dd id="scrap-weight">—</dd></div></dl><p class="flow-footnote" id="overproduction-note">超产的净膜与制袋成本一并计入本单。</p></section>
+      </aside>
+    </div>
+    <footer class="site-footer"><span>PackPilot Costing <span>© 正浩包装</span></span><span>每一次核算，都从真实生产出发。</span></footer>
+  </main>
+</body>
+</html>
