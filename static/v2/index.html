@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>正浩包装 · PackPilot 复合袋报价 2.0</title>
+  <meta name="description" content="复合袋成本核算：自动克重、分层投料、印刷、复合、制袋与包装的透明报价工作台。">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./engine.js"></script><script defer src="./spec-library.js"></script><script defer src="./app.js"></script>
+</head>
+<body>
+  <aside class="rail">
+    <a class="brand" href="./"><span class="brand-mark">正</span><span>正浩包装<small>ZHENGHAO PACKAGING</small></span></a>
+    <div class="rail-label">生产成本工作台</div>
+    <button class="rail-item selected" data-tab="product"><span>▧</span> 复合袋核价 <i>2.0</i></button>
+    <a class="rail-item" href="../" id="legacy-link"><span>▤</span> PE 背心袋 <span class="arrow">↗</span></a>
+    <div class="rail-note"><span class="live-dot"></span> 当前核算标准<br><strong>6,000 m / 轴</strong><p>印刷可选 · 无利润加成<br>按本单可结算数量分摊</p></div>
+    <div class="rail-bottom">PACKPILOT<span>把每一分成本，算清楚。</span></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><div>核价工作台 <span>/</span> <b>复合袋报价</b></div><div class="top-status"><span class="live-dot"></span><span id="save-status">正在连接规格库…</span></div></header>
+    <main>
+      <div class="page-heading"><div><div class="eyebrow">PACKPILOT / COSTING 2.0</div><h1>复合袋报价工作台 <span>2.0</span></h1><p>从一轴原膜，到每一个可结算的袋子。</p></div><div class="actions"><button id="export-json" class="button primary">↓ 下载核价单</button></div></div>
+      <section class="spec-library" aria-label="规格库">
+        <div class="spec-toolbar">
+          <label for="spec-select">规格库</label><select id="spec-select" disabled><option>正在读取规格库…</option></select>
+          <button id="new-spec" class="button primary" disabled>＋ 新增规格</button>
+          <span id="spec-status" role="status" aria-live="polite"></span>
+        </div>
+        <details id="spec-management">
+          <summary>管理规格</summary>
+          <div class="spec-operations"><button id="save-spec" class="button" disabled>保存修改</button><button id="copy-spec" class="button" disabled>复制为新规格</button><button id="delete-spec" class="button danger" disabled>删除规格</button></div>
+          <p id="storage-description" class="storage-description">正在检查保存位置…</p>
+          <div class="spec-operations secondary"><button id="save-draft" class="text-button">保存临时草稿</button><button id="load-draft" class="text-button">恢复旧草稿</button><button id="import-button" class="text-button">导入核价 JSON</button><button id="retry-specs" class="text-button" hidden>重新连接规格库</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
+        </details>
+        <p id="library-error" class="library-error" role="alert" hidden></p>
+      </section>
+      <div class="work-grid">
+        <div class="editor">
+          <nav class="tabs" aria-label="核价步骤"><button data-tab="product" class="active"><span>01</span> 产品与排版</button><button data-tab="materials"><span>02</span> 分层投料</button><button data-tab="process"><span>03</span> 工艺与包装</button><button data-tab="detail"><span>04</span> 成本与公式</button></nav>
+          <div id="panel-product" class="panel" role="region" aria-label="产品与排版">
+            <section class="card"><div class="section-head"><div><h2>产品与生产规格</h2><p>尺寸用于描述产品；产量按实际切长与排版出数计算。</p></div><span class="badge">一轴核算</span></div>
+              <div class="form-grid"><label class="wide">订单 / 产品名称<input data-field="name" id="product-name" type="text" maxlength="100"></label><label>袋型<select data-field="bagType"><option value="three-side">三边封 / 竖切袋</option><option value="back-seal">背封 / 中封袋</option><option value="four-lane">四联袋</option><option value="custom">其他袋型（手工核定）</option></select></label><label>每轴核算长度<div class="locked">6,000 <span>m · 固定</span></div></label><label><span id="width-label">产品宽度</span><div class="input-unit"><input data-field="widthMm" type="number" min="0.01" step="any"><span>mm</span></div></label><label>产品长度<div class="input-unit"><input data-field="heightMm" type="number" min="0.01" step="any"><span>mm</span></div></label><label>走膜切长<div class="input-unit"><input data-field="cutLengthMm" type="number" min="0.01" step="any"><span>mm</span></div></label><label>排版出数<div class="input-unit"><input data-field="lanes" type="number" min="1" step="1"><span>出</span></div></label><label>复合膜宽<div class="input-unit"><input data-field="filmWidthMm" type="number" min="10.01" step="any"><span>mm</span></div></label><label>制袋损耗率 <span class="role">主管调整</span><div class="input-unit"><input data-field="lossPct" type="number" min="0" max="99.99" step="any"><span>%</span></div></label><label class="wide">本单可结算数量上限 <span class="optional">留空 = 全部合格袋可结算</span><div class="input-unit"><input data-field="orderQuantity" type="number" min="1" step="1" placeholder="按全部预计合格数量结算"><span>个</span></div></label></div>
+              <div class="info-note">合格超产但无法销售的袋子，成本仍由本单承担。可结算数量 = 预计合格数量与本单上限中的较小值。</div>
+            </section>
+            <section class="card weight-card"><div class="section-head"><div><h2>自动单袋克重</h2><p>按成品展开面积与各层厚度计算，投料增加 2% 不改变单袋克重。</p></div><span class="badge teal">理论值</span></div>
+              <div class="form-grid"><label class="wide">单袋总展开面积手工覆盖 <span class="optional">留空按袋型计算；含全部正反面、底部与折边</span><div class="input-unit"><input data-field="weight.areaM2" type="number" min="0.000001" step="any" placeholder="三边封留空 = 宽 × 长 × 2"><span>㎡/个</span></div></label></div>
+              <p id="weight-area-note" class="muted"></p><div id="weight-results"></div>
+              <p class="muted">含胶克重暂按每道 1.5 g/㎡全部留存估算；请以实际干胶量校正。油墨、拉链等附件重量未计入。</p>
+            </section>
+            <section class="card layout-card"><div class="section-head"><div><h2>排版与出袋预览</h2><p>示意图用于核对口径，不替代车间排版图。</p></div><span class="badge teal" id="layout-badge">双出</span></div><div id="layout-preview"></div><div class="yield-strip"><div><span>理论出袋</span><strong id="raw-output">—</strong></div><span class="flow-arrow">→ 扣制袋损耗 →</span><div><span>预计合格</span><strong id="good-output">—</strong></div><span class="flow-arrow">→ 按订单结算 →</span><div><span>可结算</span><strong id="billable-output">—</strong></div></div><p class="muted" id="layout-note"></p></section>
+            <button class="next-button" data-tab="materials">继续：核对分层投料 <span>→</span></button>
+          </div>
+          <div id="panel-materials" class="panel" role="region" aria-label="分层投料" hidden>
+            <section class="card"><div class="section-head"><div><h2>材料结构与投料</h2><p>由外到内排列，最后一层为内膜；每层可独立核定实际 kg。</p></div><button class="button" id="add-layer">＋ 添加中层</button></div><div class="structure" id="structure"></div><div class="table-wrap"><table class="layer-table"><thead><tr><th>层位 / 材质</th><th>厚度 μm</th><th>比重 g/cm³</th><th>元/kg</th><th>核价投料 kg</th><th></th></tr></thead><tbody id="layer-inputs"></tbody></table></div><div class="info-note">理论 kg 按 6,000 m 计算。建议投料 = 理论 kg × 1.02；输入实际 kg 后直接计价，不再乘 1.02。内膜宽度固定比外 / 中层宽 5 mm。</div><div id="material-notes" class="material-notes"></div></section>
+            <section class="card"><div class="section-head"><div><h2>本轴分层重量与金额</h2><p>中间值全精度计算，以下仅为显示取舍。</p></div></div><div class="table-wrap" id="layer-results"></div></section>
+            <details class="card reference"><summary>材料比重依据与假设 <span>厂家资料 ↗</span></summary><div id="density-sources"></div></details>
+            <button class="next-button" data-tab="process">继续：核对工艺与包装 <span>→</span></button>
+          </div>
+          <div id="panel-process" class="panel" role="region" aria-label="工艺与包装" hidden>
+            <section class="card"><div class="section-head"><div><h2>印刷费用</h2><p>按一轴 6,000 m 核算；批次轴数只选择费率，不乘入本轴总成本。</p></div><span class="badge">三种模式</span></div>
+              <div class="form-grid"><label>印刷计费模式<select data-field="printing.mode"><option value="none">无印刷</option><option value="area">按面积 · 默认 0.50 元/㎡</option><option value="tier">工厂色数 / 轴数阶梯</option></select></label><label>印刷色数<div class="input-unit"><input data-field="printing.colors" type="number" min="1" step="1"><span>色</span></div></label><label>计价批次轴数 <span class="optional">用于印刷 / 复合模板</span><div class="input-unit"><input data-field="rollCount" type="number" min="1" step="1"><span>轴</span></div></label><label>面积费率覆盖 <span class="optional">留空 = 0.50</span><div class="input-unit"><input data-field="printing.rate" type="number" min="0" step="any" placeholder="0.50"><span>元/㎡</span></div></label><label>阶梯费率覆盖 <span class="optional">留空用历史模板</span><div class="input-unit"><input data-field="printing.tierRatePerRoll" type="number" min="0" step="any" placeholder="按色数与批次自动匹配"><span>元/轴</span></div></label></div>
+              <div id="printing-explain" class="calc-note"></div><p class="muted">历史模板：≤6 色，批次≥5 轴为 200 元/轴，少于 5 轴为 300 元/轴；≥7 色，批次&gt;3 轴为 300 元/轴，≤3 轴为 500 元/轴。来源为工厂 2020 年《销售价格核定方案》，当前适用性待工厂确认，可手工覆盖。版费等未录入费用另行核定。</p>
+            </section>
+            <section class="card"><div class="section-head"><div><h2>复合费用</h2><p>两种计费方式二选一，各道工序按同一口径核算。</p></div><span class="badge">互斥计费</span></div><div class="mode-selector"><label><input type="radio" name="lam-mode" value="area"><span><strong>综合平米费</strong><small>已含胶水、人工与水电</small></span></label><label><input type="radio" name="lam-mode" value="detail"><span><strong>胶水 + 人工细算</strong><small>用胶面积按皮轴宽度计算</small></span></label></div><div class="form-grid"><label>复合工艺<select data-field="lamination.process"><option value="solventless">无溶剂复合</option><option value="dry-normal">干复 · 普通胶水</option><option value="dry-boil">干复 · 水煮胶水</option><option value="dry-retort">干复 · 蒸煮胶水</option><option value="dry-yuli">干复 · 玉立胶水</option></select></label><label>综合费手工覆盖 <span class="optional">留空用模板</span><div class="input-unit"><input data-field="lamination.rate" type="number" min="0" step="any" placeholder="自动按模板"><span>元/㎡</span></div></label><label>复合道数 <span class="optional">留空 = 层数 − 1</span><div class="input-unit"><input data-field="lamination.passes" type="number" min="1" step="1" placeholder="自动"><span>道</span></div></label></div><div id="lamination-explain" class="calc-note"></div><div class="reference-links"><a href="https://packpilot-costing.dongmei2469.chatgpt.site/v2/assets/rollers.jpg" target="_blank" rel="noopener">查看工厂现有皮轴照片 ↗</a><label>照片参考规格<select id="roller-reference"><option value="">选择待核实规格（不改膜宽）</option><option value="400">400 mm · 待核实</option><option value="450">450 mm · 历史单已确认</option><option value="470">470 mm · 待核实</option><option value="510">510 mm · 待核实</option><option value="610">610 mm · 待核实</option><option value="640">640 mm · 待核实</option></select></label><span id="roller-check" class="muted"></span></div><p class="muted">照片是现有设备规格参考，模糊、涂改数字未录入。实际用胶计算始终按“复合膜宽 − 10 mm”。批次轴数不会把本单成本乘轴数。</p></section>
+            <section class="card"><div class="section-head"><div><h2>制袋加工费</h2><p>参考《销售价格核定方案》，重叠或缺少档位时请人工核定。</p></div><span class="badge amber">模板待复核</span></div><div class="form-grid"><label>制袋单价手工覆盖<div class="input-unit"><input data-field="bagging.rate" type="number" min="0" step="any" placeholder="留空按袋型 / 长度 / 联数匹配"><span>元/个</span></div></label><label>制袋费计费基数<select data-field="bagging.basis"><option value="qualified">预计合格数量（默认假设）</option><option value="theoretical">理论数量（取整）</option><option value="billable">本单可结算数量</option></select></label></div><div class="check-row"><label><input data-field="bagging.standup" type="checkbox"> 自立附加 0.01 元/个</label><label><input data-field="bagging.zipper" type="checkbox"> 拉链附加 0.01 元/个</label></div><div id="bagging-explain" class="calc-note"></div><p class="muted">自立 / 拉链按照片中的附加价暂算，适用袋型需复核。模板长度取“产品长度”，与走膜切长分别输入。</p></section>
+            <section class="card"><div class="section-head"><div><h2>交付包装</h2><p>包装数量按可结算数量向上取整。</p></div></div><div class="form-grid"><label>包装方式<select data-field="packaging.type"><option value="carton">纸箱 + 套箱袋 + 合格证</option><option value="pocket">包装口袋</option></select></label><label>每件装袋量<div class="input-unit"><input data-field="packaging.capacity" type="number" min="1" step="1"><span>个/件</span></div></label></div><div class="check-row"><label><input data-field="packaging.certificate" type="checkbox"> 包装口袋附合格证 0.10 元/件（纸箱固定附带）</label></div><div id="packaging-explain" class="calc-note"></div></section>
+            <details class="card reference"><summary>查看完整工厂费用模板 <span>含重叠档位说明</span></summary><div id="factory-templates"></div><div class="reference-links"><a href="./assets/template-1.png" target="_blank">原模板上页 ↗</a><a href="./assets/template-2.png" target="_blank">原模板下页 ↗</a></div></details>
+            <button class="next-button" data-tab="detail">查看：成本明细与完整公式 <span>→</span></button>
+          </div>
+          <div id="panel-detail" class="panel" role="region" aria-label="成本与公式" hidden>
+            <section class="card"><div class="section-head"><div><h2>本单核价明细</h2><p>成本按本单可结算袋数分摊，合格超产不产生虚拟销售收入。</p></div><button id="export-csv" class="button">↓ 下载 CSV</button></div><div id="cost-detail"></div></section>
+            <section class="card"><div class="section-head"><div><h2>完整计算公式</h2><p>所有公式与本次输入同步，金额单位为人民币。</p></div></div><div id="formulas" class="formulas"></div></section>
+            <section class="card history-note"><h2>历史单为什么是 ¥3,969.83？</h2><p>历史单采用 PA 48 kg × 17.2 + PE 197 kg × 11.1，综合复合费 303.60，制袋费 620.00，旧包装费 33.93，合计 3,969.83 元。默认 2% 投料采用 PA 48.5622 kg、PE 198.49455 kg，且本版纸箱辅料为 4.54 元/件，因此新结果不要求与历史单相同。</p><p>历史 0.11 元/㎡为综合复合价，不能再加胶水人工。细算时 450 mm 皮轴 × 6,000 m × 1.5 g/㎡ × 20.5 元/kg + 200 = <b>283.025 元/道</b>，手写的 281 元使用了不同胶价。最终总成本不再乘 1.07，也不加利润。</p><p>茶叶示例：148 mm 是中封展开总宽，105 mm 暂作切长，510 mm 三出占幅原因待核实；PE 61 μm 和示例材料单价均需按订单确认。</p></section>
+          </div>
+        </div>
+        <aside class="quote"><div class="quote-head"><span>本单成本报价</span><span class="badge">CNY</span></div><div class="price-label">单个可结算袋成本</div><div class="big-price"><span>¥</span><strong id="unit-cost">—</strong><small>/ 个</small></div><div class="quote-sub">不另加利润 · 不额外乘 1.07</div><div id="cost-bars"></div><div class="quote-total"><span>一轴总成本</span><strong id="total-cost">—</strong></div><div class="quote-quantity"><div><span>预计合格</span><strong id="quote-good">—</strong></div><div><span>本单可结算</span><strong id="quote-billable">—</strong></div><div><span>不可结算超产</span><strong id="quote-unsold">—</strong></div></div><button class="button primary full" id="copy-result">复制核价结果 <span>⧉</span></button><button class="text-button full" id="view-detail" data-tab="detail">查看明细与公式 →</button><div id="validation" aria-live="polite"></div><div class="quote-foot">所示单价保留 5 位小数。<br>规格保存位置见“管理规格”；可下载 JSON 留档。</div></aside>
+      </div><footer>正浩包装 · PackPilot 2.0 <span>6000m / 轴 · 自动克重 · 分层核价</span></footer>
+    </main>
+  </div>
+  <dialog id="spec-dialog" aria-labelledby="spec-dialog-title">
+    <form id="spec-name-form"><h2 id="spec-dialog-title">新增规格</h2><p id="spec-dialog-description">先命名，再在报价区调整参数并保存修改。</p><label for="spec-name">规格名称<input id="spec-name" type="text" maxlength="100" required autocomplete="off"></label><div class="dialog-actions"><button type="button" id="spec-name-cancel" class="button">取消</button><button type="submit" class="button primary">创建规格</button></div></form>
+  </dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message"><h2 id="confirm-title"></h2><p id="confirm-message"></p><div id="confirm-actions" class="dialog-actions"></div></dialog>
+  <div id="toast" role="status" hidden></div>
+</body></html>

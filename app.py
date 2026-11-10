@@ -10,6 +10,9 @@ from costing import CostCalculationRequest, CostCalculationResponse, calculate_c
 app = FastAPI(title="PackPilot Costing & Weight Calculator", version="1.0.0")
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+# V2 is an independent browser-local calculator; keep every V1 API unchanged.
+# check_dir=False allows API-only installations to start before copying V2 assets.
+app.mount("/v2", StaticFiles(directory=STATIC_DIR / "v2", html=True, check_dir=False), name="v2")
 
 
 @app.get("/", include_in_schema=False)
